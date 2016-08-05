@@ -1,0 +1,57 @@
+
+# Build as jupyterhub/singleuser
+# Run with the DockerSpawner in JupyterHub
+
+FROM jupyterhub/singleuser
+
+MAINTAINER Shreyas Cholia <scholia@lbl.gov>
+
+EXPOSE 8888
+EXPOSE 5000
+EXPOSE 5001
+EXPOSE 5002
+
+USER root
+
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
+RUN echo "deb http://repo.mongodb.org/apt/debian jessie/mongodb-org/3.2 main" | tee /etc/apt/sources.list.d/mongodb-org-3.2.list
+RUN apt-get update
+RUN apt-get install -y cmake  pkg-config libpcre3 libpcre3-dev swig libxml2 libxml2-dev zlib1g zlib1g-dev
+RUN apt-get install -y mongodb-org nodejs npm
+RUN npm install -g apidoc
+RUN mkdir -p /data/db && chown jovyan /data/db
+
+ADD POTCARs /POTCARs
+COPY install_openbabel.sh /tmp/install_openbabel.sh
+RUN /tmp/install_openbabel.sh
+
+
+USER jovyan
+
+RUN pip3 install pymongo palettable prettyplotlib
+RUN pip3 install pymatgen
+RUN pip3 install fireworks
+## Check with Shyue on py3 support
+# RUN pip3 install pymatgen-db
+RUN bash -c 'source activate python2 && pip install pymongo palettable prettyplotlib'
+RUN bash -c 'source activate python2 && pip install pymatgen'
+RUN bash -c 'source activate python2 && pip install fireworks'
+
+## Add pythonpath to conda env
+RUN mkdir -p /opt/conda/envs/python2/etc/conda/activate.d;  mkdir -p /opt/conda/envs/python2/etc/conda/deactivate.d; \
+    echo '#!/bin/sh' > /opt/conda/envs/python2/etc/conda/activate.d/env_vars.sh; \
+    echo 'export PYTHONPATH=/usr/local/lib' >> /opt/conda/envs/python2/etc/conda/activate.d/env_vars.sh; \
+    echo '#!/bin/sh' > /opt/conda/envs/python2/etc/conda/deactivate.d/env_vars.sh; \
+    echo 'unset PYTHONPATH' >> /opt/conda/envs/python2/etc/conda/deactivate.d/env_vars.sh
+
+RUN echo 'export VASP_PSP_DIR=/POTCARs/' >> /home/jovyan/.bashrc
+RUN echo 'source activate python2' >> /home/jovyan/.bashrc
+
+COPY kernel.json /usr/local/share/jupyter/kernels/python2/kernel.json
+
+WORKDIR /home/jovyan/work
+COPY README.txt /home/jovyan/work/README.txt
+# smoke test that it's importable at least
+RUN sh /srv/singleuser/singleuser.sh -h
+CMD ["sh", "/srv/singleuser/singleuser.sh"]
+
