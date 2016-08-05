@@ -1,0 +1,10 @@
+materialsproject/jupyterhub-singleuser docker image
+
+version: 0.1.4
+--------------
+- Add VASP_PSP_DIR to kernel env
+- Add VASP_PSP_DIR to bashrc
+- default to python2 in shell (bashrc: `source activate python2`) 
+- change kernel name to python2
+- add root pw
+- add dvipng
