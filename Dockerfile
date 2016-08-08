@@ -28,18 +28,25 @@ RUN apt-get install -y dvipng
 RUN bash -c 'echo -e "Fe2O3-rox\nFe2O3-rox" | passwd'
 
 USER jovyan
+WORKDIR /tmp
 
 RUN pip3 install pymongo palettable prettyplotlib
 RUN pip3 install pymatgen
 RUN pip3 install fireworks
 RUN pip3 install custodian
-## Check with Shyue on py3 support
-# RUN pip3 install pymatgen-db
+RUN pip3 install pymatgen-db==0.6.1
+RUN pip3 install flamyngo==0.4.3
+
 RUN bash -c 'source activate python2 && pip install pymongo palettable prettyplotlib'
 RUN bash -c 'source activate python2 && pip install pymatgen'
 RUN bash -c 'source activate python2 && pip install fireworks'
 RUN bash -c 'source activate python2 && pip install custodian'
 RUN bash -c 'source activate python2 && pip install -e git+https://github.com/hackingmaterials/MatMethods.git@v0.21#egg=matmethods'
+RUN bash -c 'source activate python2 && pip install pymatgen-db==0.6.1'
+RUN bash -c 'source activate python2 && pip install flamyngo==0.4.3'
+
+
+
 
 ## Add pythonpath to conda env
 RUN mkdir -p /opt/conda/envs/python2/etc/conda/activate.d;  mkdir -p /opt/conda/envs/python2/etc/conda/deactivate.d; \

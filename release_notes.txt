@@ -1,5 +1,11 @@
 materialsproject/jupyterhub-singleuser docker image
 
+version 0.1.6
+-------------
+- add pymatgen-db
+- add flamyngo
+- use /tmp as WORKDIR for build
+
 version: 0.1.5
 --------------
 - Add matmethods
