@@ -32,12 +32,14 @@ USER jovyan
 RUN pip3 install pymongo palettable prettyplotlib
 RUN pip3 install pymatgen
 RUN pip3 install fireworks
+RUN pip3 install custodian
 ## Check with Shyue on py3 support
 # RUN pip3 install pymatgen-db
 RUN bash -c 'source activate python2 && pip install pymongo palettable prettyplotlib'
 RUN bash -c 'source activate python2 && pip install pymatgen'
 RUN bash -c 'source activate python2 && pip install fireworks'
-RUN bash -c 'source activate python2 && pip install -e git+https://github.com/hackingmaterials/MatMethods.git@e27dfbf9353a543d8948aeb9e42480d79ee37659#egg=matmethods'
+RUN bash -c 'source activate python2 && pip install custodian'
+RUN bash -c 'source activate python2 && pip install -e git+https://github.com/hackingmaterials/MatMethods.git@v0.21#egg=matmethods'
 
 ## Add pythonpath to conda env
 RUN mkdir -p /opt/conda/envs/python2/etc/conda/activate.d;  mkdir -p /opt/conda/envs/python2/etc/conda/deactivate.d; \

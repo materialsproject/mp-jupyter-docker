@@ -3,6 +3,7 @@ materialsproject/jupyterhub-singleuser docker image
 version: 0.1.5
 --------------
 - Add matmethods
+- add custodian
 
 version: 0.1.4
 --------------
