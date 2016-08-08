@@ -1,5 +1,9 @@
 materialsproject/jupyterhub-singleuser docker image
 
+version: 0.1.5
+--------------
+- Add matmethods
+
 version: 0.1.4
 --------------
 - Add VASP_PSP_DIR to kernel env
