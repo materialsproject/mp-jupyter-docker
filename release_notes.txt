@@ -1,5 +1,10 @@
 materialsproject/jupyterhub-singleuser docker image
 
+version 0.1.7
+-------------
+- add mpcontribs
+- symlink node -> nodejs
+
 version 0.1.6
 -------------
 - add pymatgen-db

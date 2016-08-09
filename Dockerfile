@@ -27,6 +27,8 @@ RUN /tmp/install_openbabel.sh
 RUN apt-get install -y dvipng
 RUN bash -c 'echo -e "Fe2O3-rox\nFe2O3-rox" | passwd'
 
+RUN ln -s /usr/bin/nodejs /usr/local/bin/node
+
 USER jovyan
 WORKDIR /tmp
 
@@ -34,6 +36,7 @@ RUN pip3 install pymongo palettable prettyplotlib
 RUN pip3 install pymatgen
 RUN pip3 install fireworks
 RUN pip3 install custodian
+RUN pip3 install -e git+https://github.com/hackingmaterials/MatMethods.git@v0.21#egg=matmethods
 RUN pip3 install pymatgen-db==0.6.1
 RUN pip3 install flamyngo==0.4.3
 
@@ -44,8 +47,7 @@ RUN bash -c 'source activate python2 && pip install custodian'
 RUN bash -c 'source activate python2 && pip install -e git+https://github.com/hackingmaterials/MatMethods.git@v0.21#egg=matmethods'
 RUN bash -c 'source activate python2 && pip install pymatgen-db==0.6.1'
 RUN bash -c 'source activate python2 && pip install flamyngo==0.4.3'
-
-
+RUN bash -c 'source activate python2 && pip install -e git+https://github.com/materialsproject/MPContribs.git#egg=mpcontribs --src .'
 
 
 ## Add pythonpath to conda env
