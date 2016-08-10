@@ -32,6 +32,7 @@ RUN ln -s /usr/bin/nodejs /usr/local/bin/node
 USER jovyan
 WORKDIR /tmp
 
+RUN pip3 install Django==1.8.5
 RUN pip3 install pymongo palettable prettyplotlib
 RUN pip3 install pymatgen
 RUN pip3 install fireworks
@@ -39,16 +40,20 @@ RUN pip3 install custodian
 RUN pip3 install -e git+https://github.com/hackingmaterials/MatMethods.git@v0.21#egg=matmethods
 RUN pip3 install pymatgen-db==0.6.1
 RUN pip3 install flamyngo==0.4.3
+RUN conda clean -a -y
 
+RUN bash -c 'source activate python2 && pip install Django==1.8.5'
 RUN bash -c 'source activate python2 && pip install pymongo palettable prettyplotlib'
 RUN bash -c 'source activate python2 && pip install pymatgen'
 RUN bash -c 'source activate python2 && pip install fireworks'
 RUN bash -c 'source activate python2 && pip install custodian'
 RUN bash -c 'source activate python2 && pip install -e git+https://github.com/hackingmaterials/MatMethods.git@v0.21#egg=matmethods'
+RUN bash -c 'source activate python2 && pip install -e git+https://github.com/materialsproject/MPContribs.git#egg=mpcontribs'
 RUN bash -c 'source activate python2 && pip install pymatgen-db==0.6.1'
 RUN bash -c 'source activate python2 && pip install flamyngo==0.4.3'
-RUN bash -c 'source activate python2 && pip install -e git+https://github.com/materialsproject/MPContribs.git#egg=mpcontribs --src .'
+RUN bash -c 'cp /tmp/src/mpcontribs/db.sqlite3.init /tmp/src/mpcontribs/db.sqlite3'
 
+RUN bash -c 'source activate python2 && conda clean -a -y'
 
 ## Add pythonpath to conda env
 RUN mkdir -p /opt/conda/envs/python2/etc/conda/activate.d;  mkdir -p /opt/conda/envs/python2/etc/conda/deactivate.d; \
@@ -66,5 +71,5 @@ WORKDIR /home/jovyan/work
 COPY README.txt /home/jovyan/work/README.txt
 # smoke test that it's importable at least
 RUN sh /srv/singleuser/singleuser.sh -h
-CMD ["sh", "/srv/singleuser/singleuser.sh"]
+CMD ["sh", "/srv/singleuser/singleuser.sh", "--NotebookApp.allow_origin='*'"]
 

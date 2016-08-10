@@ -1,5 +1,13 @@
 materialsproject/jupyterhub-singleuser docker image
 
+version 0.1.9
+-------------
+- Change docker startup to include "--NotebookApp.allow_origin='*'" 
+
+version 0.1.8
+-------------
+- add django==1.8.5 (pin dependency for mpcontribs)
+
 version 0.1.7
 -------------
 - add mpcontribs
