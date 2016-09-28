@@ -25,7 +25,6 @@ COPY install_openbabel.sh /tmp/install_openbabel.sh
 RUN /tmp/install_openbabel.sh
 
 RUN apt-get install -y dvipng
-RUN bash -c 'echo -e "Fe2O3-rox\nFe2O3-rox" | passwd'
 
 RUN ln -s /usr/bin/nodejs /usr/local/bin/node
 
