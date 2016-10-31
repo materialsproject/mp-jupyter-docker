@@ -55,6 +55,7 @@ RUN bash -c 'source activate python2 && pip install custodian'
 RUN bash -c 'source activate python2 && pip install -e git+https://github.com/hackingmaterials/MatMethods.git@v0.21#egg=matmethods'
 WORKDIR /home/jovyan/work
 RUN bash -c 'source activate python2 && pip install -e git+https://github.com/materialsproject/MPContribs.git@mp-jupyterhub#egg=mpcontribs --src /home/jovyan/work'
+RUN cd /home/jovyan/work/mpcontribs && git checkout -b mp-jupyterhub origin/mp-jupyterhub
 RUN cp /home/jovyan/work/mpcontribs/db.sqlite3.init /home/jovyan/work/mpcontribs/db.sqlite3
 RUN cd /home/jovyan/work/mpcontribs && git remote set-url --push origin git@github.com:materialsproject/MPContribs.git
 WORKDIR /tmp
