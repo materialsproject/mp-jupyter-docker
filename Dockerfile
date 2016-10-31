@@ -54,7 +54,7 @@ RUN bash -c 'source activate python2 && pip install fireworks'
 RUN bash -c 'source activate python2 && pip install custodian'
 RUN bash -c 'source activate python2 && pip install -e git+https://github.com/hackingmaterials/MatMethods.git@v0.21#egg=matmethods'
 WORKDIR /home/jovyan/work
-RUN bash -c 'source activate python2 && pip install -e git+https://github.com/materialsproject/MPContribs.git#egg=mpcontribs --src /home/jovyan/work'
+RUN bash -c 'source activate python2 && pip install -e git+https://github.com/materialsproject/MPContribs.git@mp-jupyterhub#egg=mpcontribs --src /home/jovyan/work'
 RUN cp /home/jovyan/work/mpcontribs/db.sqlite3.init /home/jovyan/work/mpcontribs/db.sqlite3
 RUN cd /home/jovyan/work/mpcontribs && git remote set-url --push origin git@github.com:materialsproject/MPContribs.git
 WORKDIR /tmp
@@ -75,6 +75,12 @@ RUN echo 'export EDITOR=vim' >> /home/jovyan/.bashrc
 
 RUN git clone https://github.com/amix/vimrc.git /home/jovyan/.vim_runtime
 RUN sh /home/jovyan/.vim_runtime/install_basic_vimrc.sh
+
+RUN mkdir /home/jovyan/.ssh && chown jovyan /home/jovyan/.ssh && chmod 700 /home/jovyan/.ssh
+RUN ssh-keygen -f /home/jovyan/.ssh/id_rsa -t rsa -N '' -b 4096
+RUN eval `ssh-agent -s` && ssh-add /home/jovyan/.ssh/id_rsa
+RUN git config --global push.default simple
+#RUN touch /data/db/mongod.log && mongod --fork --logpath /data/db/mongod.log
 
 COPY kernel.json /usr/local/share/jupyter/kernels/python2/kernel.json
 
