@@ -16,14 +16,13 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
 RUN echo "deb http://repo.mongodb.org/apt/debian jessie/mongodb-org/3.2 main" | tee /etc/apt/sources.list.d/mongodb-org-3.2.list
 RUN apt-get update
 RUN apt-get install -y cmake  pkg-config libpcre3 libpcre3-dev swig libxml2 libxml2-dev zlib1g zlib1g-dev
-RUN apt-get install -y mongodb-org nodejs npm
+RUN apt-get install -y mongodb-org nodejs npm curl
 RUN apt-get install -y ssh telnet postfix tree silversearcher-ag vim
 RUN npm install -g git+https://github.com/tschaume/apidoc.git#csrf
 RUN npm install -g bower
 RUN cp /usr/share/postfix/main.cf.debian /etc/postfix/main.cf
 RUN echo 'mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128' >> /etc/postfix/main.cf
 RUN echo 'mydestination = localhost' >> /etc/postfix/main.cf
-RUN /etc/init.d/postfix start
 RUN mkdir -p /data/db && chown jovyan /data/db
 
 ADD POTCARs /POTCARs
@@ -31,6 +30,7 @@ COPY install_openbabel.sh /tmp/install_openbabel.sh
 RUN /tmp/install_openbabel.sh
 
 RUN apt-get install -y dvipng
+RUN bash -c 'echo -e "Fe2O3-rox\nFe2O3-rox" | passwd'
 
 RUN ln -s /usr/bin/nodejs /usr/local/bin/node
 
@@ -90,6 +90,6 @@ WORKDIR /home/jovyan/work
 COPY README.txt /home/jovyan/work/README.txt
 # smoke test that it's importable at least
 RUN sh /srv/singleuser/singleuser.sh -h
-CMD ["export" "JUPYTER_CONFIG_DIR=/home/jovyan/work/mpcontribs/notebooks/profile"]
+RUN ln -s /home/jovyan/work/mpcontribs/notebooks/profile/custom /home/jovyan/.jupyter/custom
 CMD ["sh", "/srv/singleuser/singleuser.sh", "--NotebookApp.allow_origin='*'"]
 
