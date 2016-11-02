@@ -58,6 +58,7 @@ RUN bash -c 'source activate python2 && pip install -e git+https://github.com/ma
 RUN cd /home/jovyan/work/mpcontribs && git checkout -b mp-jupyterhub origin/mp-jupyterhub
 RUN cp /home/jovyan/work/mpcontribs/db.sqlite3.init /home/jovyan/work/mpcontribs/db.sqlite3
 RUN cd /home/jovyan/work/mpcontribs && git remote set-url --push origin git@github.com:materialsproject/MPContribs.git
+RUN cd /home/jovyan/work/mpcontribs/webtzite && bower install
 WORKDIR /tmp
 RUN bash -c 'source activate python2 && pip install pymatgen-db==0.6.1'
 RUN bash -c 'source activate python2 && pip install flamyngo==0.4.3'
