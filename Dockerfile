@@ -37,6 +37,7 @@ RUN ln -s /usr/bin/nodejs /usr/local/bin/node
 USER jovyan
 WORKDIR /tmp
 
+RUN pip3 install --upgrade pip
 RUN pip3 install Django==1.8.5
 RUN pip3 install pymongo palettable prettyplotlib
 RUN pip3 install pymatgen
@@ -47,6 +48,7 @@ RUN pip3 install pymatgen-db==0.6.1
 RUN pip3 install flamyngo==0.4.3
 RUN conda clean -a -y
 
+RUN bash -c 'source activate python2 && pip install --upgrade pip'
 RUN bash -c 'source activate python2 && pip install Django==1.8.5'
 RUN bash -c 'source activate python2 && pip install pymongo palettable prettyplotlib'
 RUN bash -c 'source activate python2 && pip install pymatgen'
@@ -89,6 +91,6 @@ COPY kernel.json /usr/local/share/jupyter/kernels/python2/kernel.json
 WORKDIR /home/jovyan/work
 COPY README.txt /home/jovyan/work/README.txt
 RUN ln -s /home/jovyan/work/mpcontribs/notebooks/profile/custom /home/jovyan/.jupyter/custom
-# smoke test that it's importable at least
 COPY singleuser_wrapper.sh /tmp/singleuser_wrapper.sh
+RUN bash -c 'cd /home/jovyan/work/mpcontribs/docker/jupyterhub && pip3 install -e .'
 CMD ["bash", "-c", "/tmp/singleuser_wrapper.sh"]
