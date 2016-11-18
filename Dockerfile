@@ -82,14 +82,13 @@ RUN mkdir /home/jovyan/.ssh && chown jovyan /home/jovyan/.ssh && chmod 700 /home
 RUN ssh-keygen -f /home/jovyan/.ssh/id_rsa -t rsa -N '' -b 4096
 RUN eval `ssh-agent -s` && ssh-add /home/jovyan/.ssh/id_rsa
 RUN git config --global push.default simple
-#RUN touch /data/db/mongod.log && mongod --fork --logpath /data/db/mongod.log
+RUN touch /data/db/mongod.log
 
 COPY kernel.json /usr/local/share/jupyter/kernels/python2/kernel.json
 
 WORKDIR /home/jovyan/work
 COPY README.txt /home/jovyan/work/README.txt
-# smoke test that it's importable at least
-RUN sh /srv/singleuser/singleuser.sh -h
 RUN ln -s /home/jovyan/work/mpcontribs/notebooks/profile/custom /home/jovyan/.jupyter/custom
-CMD ["sh", "/srv/singleuser/singleuser.sh", "--NotebookApp.allow_origin='*'"]
-
+# smoke test that it's importable at least
+COPY singleuser_wrapper.sh /tmp/singleuser_wrapper.sh
+CMD ["bash", "-c", "/tmp/singleuser_wrapper.sh"]
