@@ -91,6 +91,9 @@ COPY kernel.json /usr/local/share/jupyter/kernels/python2/kernel.json
 WORKDIR /home/jovyan/work
 COPY README.txt /home/jovyan/work/README.txt
 RUN ln -s /home/jovyan/work/mpcontribs/notebooks/profile/custom /home/jovyan/.jupyter/custom
-COPY singleuser_wrapper.sh /tmp/singleuser_wrapper.sh
 RUN bash -c 'cd /home/jovyan/work/mpcontribs/docker/jupyterhub && pip3 install -e .'
-CMD ["bash", "-c", "/tmp/singleuser_wrapper.sh"]
+user root
+RUN apt-get install -y supervisor
+RUN mkdir -p /var/log/supervisor
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+CMD ["/usr/bin/supervisord"]
