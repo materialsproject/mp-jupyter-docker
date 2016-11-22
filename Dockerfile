@@ -68,6 +68,7 @@ RUN cd /home/jovyan/work/mpcontribs/webtzite && bower install
 WORKDIR /tmp
 RUN bash -c 'source activate python2 && pip install pymatgen-db==0.6.1'
 RUN bash -c 'source activate python2 && pip install flamyngo==0.4.3'
+RUN bash -c 'source activate python2 && pip install gitpython'
 RUN bash -c 'source activate python2 && conda clean -a -y'
 
 ## Add pythonpath to conda env
@@ -80,6 +81,7 @@ RUN mkdir -p /opt/conda/envs/python2/etc/conda/activate.d;  mkdir -p /opt/conda/
 RUN echo 'export VASP_PSP_DIR=/POTCARs/' >> /home/jovyan/.bashrc
 RUN echo 'source activate python2' >> /home/jovyan/.bashrc
 RUN echo 'export EDITOR=vim' >> /home/jovyan/.bashrc
+RUN echo 'alias l="ls -ltrh"' >> /home/jovyan/.bashrc
 
 RUN git clone https://github.com/amix/vimrc.git /home/jovyan/.vim_runtime
 RUN sh /home/jovyan/.vim_runtime/install_basic_vimrc.sh
