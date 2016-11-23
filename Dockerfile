@@ -16,7 +16,7 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
 RUN echo "deb http://repo.mongodb.org/apt/debian jessie/mongodb-org/3.2 main" | tee /etc/apt/sources.list.d/mongodb-org-3.2.list
 RUN apt-get update
 RUN apt-get install -y cmake  pkg-config libpcre3 libpcre3-dev swig libxml2 libxml2-dev zlib1g zlib1g-dev
-RUN apt-get install -y mongodb-org nodejs npm curl
+RUN apt-get install -y mongodb-org nodejs npm curl supervisor
 RUN apt-get install -y ssh telnet postfix tree silversearcher-ag vim
 RUN npm install -g git+https://github.com/tschaume/apidoc.git#csrf
 RUN npm install -g bower
@@ -24,6 +24,8 @@ RUN cp /usr/share/postfix/main.cf.debian /etc/postfix/main.cf
 RUN echo 'mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128' >> /etc/postfix/main.cf
 RUN echo 'mydestination = localhost' >> /etc/postfix/main.cf
 RUN mkdir -p /data/db && chown jovyan /data/db
+RUN mkdir -p /var/log/supervisor
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 ADD POTCARs /POTCARs
 COPY install_openbabel.sh /tmp/install_openbabel.sh
@@ -55,16 +57,21 @@ RUN bash -c 'source activate python2 && pip install pymatgen'
 RUN bash -c 'source activate python2 && pip install fireworks'
 RUN bash -c 'source activate python2 && pip install custodian'
 RUN bash -c 'source activate python2 && pip install -e git+https://github.com/hackingmaterials/MatMethods.git@v0.21#egg=matmethods'
+
 WORKDIR /home/jovyan/work
-RUN bash -c 'source activate python2 && pip install -e git+https://github.com/materialsproject/MPContribs.git#egg=mpcontribs --src /home/jovyan/work'
-RUN cd /home/jovyan/work/mpcontribs && git checkout master
-RUN cp /home/jovyan/work/mpcontribs/db.sqlite3.init /home/jovyan/work/mpcontribs/db.sqlite3
-RUN cd /home/jovyan/work/mpcontribs && git remote set-url --push origin git@github.com:materialsproject/MPContribs.git
-RUN cd /home/jovyan/work/mpcontribs/mpcontribs/users && git remote set-url --push origin git@github.com:materialsproject/MPContribsUsers.git
-RUN cd /home/jovyan/work/mpcontribs/mpcontribs/users && git checkout master
-RUN cd /home/jovyan/work/mpcontribs/webtzite && git remote set-url --push origin git@github.com:materialsproject/webtzite.git
-RUN cd /home/jovyan/work/mpcontribs/webtzite && git checkout master
-RUN cd /home/jovyan/work/mpcontribs/webtzite && bower install
+RUN git clone https://github.com/materialsproject/MPContribs.git
+WORKDIR /home/jovyan/work/MPContribs
+RUN cp db.sqlite3.init db.sqlite3
+RUN git submodule init mpcontribs/users && git submodule update mpcontribs/users
+RUN git submodule init webtzite && git submodule update webtzite
+RUN git submodule init docker/jupyterhub && git submodule update docker/jupyterhub
+RUN cd /home/jovyan/work/MPContribs/mpcontribs/users && git checkout master
+RUN cd /home/jovyan/work/MPContribs/webtzite && git checkout master
+RUN bash -c 'source activate python2 && pip install -e .'
+RUN bash -c 'cd /home/jovyan/work/MPContribs/docker/jupyterhub && pip3 install -e .'
+RUN cd /home/jovyan/work/MPContribs/webtzite && bower install
+RUN ln -s /home/jovyan/work/MPContribs/notebooks/profile/custom /home/jovyan/.jupyter/custom
+
 WORKDIR /tmp
 RUN bash -c 'source activate python2 && pip install pymatgen-db==0.6.1'
 RUN bash -c 'source activate python2 && pip install flamyngo==0.4.3'
@@ -91,15 +98,9 @@ RUN ssh-keygen -f /home/jovyan/.ssh/id_rsa -t rsa -N '' -b 4096
 RUN eval `ssh-agent -s` && ssh-add /home/jovyan/.ssh/id_rsa
 RUN git config --global push.default simple
 RUN touch /data/db/mongod.log
-
 COPY kernel.json /usr/local/share/jupyter/kernels/python2/kernel.json
 
 WORKDIR /home/jovyan/work
 COPY README.txt /home/jovyan/work/README.txt
-RUN ln -s /home/jovyan/work/mpcontribs/notebooks/profile/custom /home/jovyan/.jupyter/custom
-RUN bash -c 'cd /home/jovyan/work/mpcontribs/docker/jupyterhub && pip3 install -e .'
 user root
-RUN apt-get install -y supervisor
-RUN mkdir -p /var/log/supervisor
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 CMD ["/usr/bin/supervisord"]
