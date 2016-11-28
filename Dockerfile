@@ -61,9 +61,12 @@ RUN bash -c 'source activate python2 && pip install -e git+https://github.com/ha
 WORKDIR /home/jovyan/work
 RUN git clone https://github.com/materialsproject/MPContribs.git
 WORKDIR /home/jovyan/work/MPContribs
+RUN git remote set-url --push origin git@github.com:materialsproject/MPContribs.git
 RUN cp db.sqlite3.init db.sqlite3
 RUN git submodule init mpcontribs/users && git submodule update mpcontribs/users
+RUN cd mpcontribs/users && git remote set-url --push origin git@github.com:materialsproject/MPContribsUsers.git
 RUN git submodule init webtzite && git submodule update webtzite
+RUN cd webtzite && git remote set-url --push origin git@github.com:materialsproject/webtzite.git
 RUN git submodule init docker/jupyterhub && git submodule update docker/jupyterhub
 RUN cd /home/jovyan/work/MPContribs/mpcontribs/users && git checkout master
 RUN cd /home/jovyan/work/MPContribs/webtzite && git checkout master
@@ -89,6 +92,8 @@ RUN echo 'export VASP_PSP_DIR=/POTCARs/' >> /home/jovyan/.bashrc
 RUN echo 'source activate python2' >> /home/jovyan/.bashrc
 RUN echo 'export EDITOR=vim' >> /home/jovyan/.bashrc
 RUN echo 'alias l="ls -ltrh"' >> /home/jovyan/.bashrc
+ARG deployment=MATGEN
+RUN echo "export DEPLOYMENT=$deployment" >> /home/jovyan/.bashrc
 
 RUN git clone https://github.com/amix/vimrc.git /home/jovyan/.vim_runtime
 RUN sh /home/jovyan/.vim_runtime/install_basic_vimrc.sh
