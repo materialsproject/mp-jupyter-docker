@@ -25,7 +25,6 @@ RUN echo 'mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128' >> /etc/pos
 RUN echo 'mydestination = localhost' >> /etc/postfix/main.cf
 RUN mkdir -p /data/db && chown jovyan /data/db
 RUN mkdir -p /var/log/supervisor
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 ADD POTCARs /POTCARs
 COPY install_openbabel.sh /tmp/install_openbabel.sh
@@ -92,8 +91,6 @@ RUN echo 'export VASP_PSP_DIR=/POTCARs/' >> /home/jovyan/.bashrc
 RUN echo 'source activate python2' >> /home/jovyan/.bashrc
 RUN echo 'export EDITOR=vim' >> /home/jovyan/.bashrc
 RUN echo 'alias l="ls -ltrh"' >> /home/jovyan/.bashrc
-ARG deployment=MATGEN
-RUN echo "export DEPLOYMENT=$deployment" >> /home/jovyan/.bashrc
 
 RUN git clone https://github.com/amix/vimrc.git /home/jovyan/.vim_runtime
 RUN sh /home/jovyan/.vim_runtime/install_basic_vimrc.sh
@@ -108,4 +105,5 @@ COPY kernel.json /usr/local/share/jupyter/kernels/python2/kernel.json
 WORKDIR /home/jovyan/work
 COPY README.txt /home/jovyan/work/README.txt
 user root
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 CMD ["/usr/bin/supervisord"]
