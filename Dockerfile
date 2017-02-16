@@ -34,6 +34,7 @@ RUN apt-get install -y dvipng
 RUN bash -c 'echo -e "Fe2O3-rox\nFe2O3-rox" | passwd'
 
 RUN ln -s /usr/bin/nodejs /usr/local/bin/node
+RUN bash -c 'npm cache clean'
 
 USER jovyan
 WORKDIR /tmp
@@ -78,6 +79,7 @@ WORKDIR /tmp
 RUN bash -c 'source activate python2 && pip install pymatgen-db==0.6.1'
 RUN bash -c 'source activate python2 && pip install flamyngo==0.4.3'
 RUN bash -c 'source activate python2 && pip install gitpython'
+RUN bash -c 'source activate python2 && conda install pyqt=4.11'
 RUN bash -c 'source activate python2 && conda clean -a -y'
 
 ## Add pythonpath to conda env
