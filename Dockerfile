@@ -57,6 +57,8 @@ RUN bash -c 'source activate python2 && pip install pymatgen'
 RUN bash -c 'source activate python2 && pip install fireworks'
 RUN bash -c 'source activate python2 && pip install custodian'
 RUN bash -c 'source activate python2 && pip install -e git+https://github.com/hackingmaterials/MatMethods.git@v0.21#egg=matmethods'
+RUN bash -c 'source activate python2 && pip install -e git+https://github.com/gabrielelanaro/chemview.git#egg=chemview'
+RUN bash -c 'source activate python2 && jupyter nbextension enable widgetsnbextension --user --py && jupyter nbextension install --user --py --symlink chemview && jupyter nbextension enable --user --py  chemview'
 
 WORKDIR /home/jovyan/work
 RUN git clone https://github.com/materialsproject/MPContribs.git
