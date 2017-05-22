@@ -51,6 +51,8 @@ RUN pip3 install flamyngo==0.4.3
 RUN conda clean -a -y
 
 RUN bash -c 'source activate python2 && pip install --upgrade pip'
+RUN bash -c 'source activate python2 && pip install -U ipykernel==4.5.1 nbformat notebook ipywidgets'
+RUN bash -c 'source activate python2 && jupyter nbextension enable --py widgetsnbextension --sys-prefix'
 RUN bash -c 'source activate python2 && pip install Django==1.8.5'
 RUN bash -c 'source activate python2 && pip install pymongo palettable prettyplotlib'
 RUN bash -c 'source activate python2 && pip install pymatgen'
@@ -81,8 +83,7 @@ RUN bash -c 'source activate python2 && pip install flamyngo==0.4.3'
 RUN bash -c 'source activate python2 && pip install gitpython'
 RUN bash -c 'source activate python2 && conda install pyqt=4.11'
 RUN bash -c 'source activate python2 && pip install -e git+https://github.com/gabrielelanaro/chemview.git#egg=chemview'
-RUN bash -c 'source activate python2 && jupyter nbextension enable widgetsnbextension --user --py && jupyter nbextension install --user --py --symlink chemview && jupyter nbextension enable --user --py  chemview'
-RUN bash -c 'source activate python2 && pip install -U ipykernel==4.5.1 nbformat notebook'
+RUN bash -c 'source activate python2 && jupyter nbextension install --sys-prefix --py --symlink chemview && jupyter nbextension enable --sys-prefix --py chemview'
 RUN bash -c 'source activate python2 && conda clean -a -y'
 
 ## Add pythonpath to conda env
