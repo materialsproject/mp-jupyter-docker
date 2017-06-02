@@ -16,8 +16,10 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
 RUN echo "deb http://repo.mongodb.org/apt/debian jessie/mongodb-org/3.2 main" | tee /etc/apt/sources.list.d/mongodb-org-3.2.list
 RUN apt-get update
 RUN apt-get install -y cmake  pkg-config libpcre3 libpcre3-dev swig libxml2 libxml2-dev zlib1g zlib1g-dev
-RUN apt-get install -y mongodb-org nodejs npm curl supervisor
+RUN apt-get install -y apt-utils
+RUN apt-get install -y mongodb-org curl supervisor
 RUN apt-get install -y ssh telnet postfix tree silversearcher-ag vim
+RUN curl -sL https://deb.nodesource.com/setup_6.x | bash - && apt-get update && apt-get install -y nodejs && npm install npm@latest -g
 RUN npm install -g git+https://github.com/tschaume/apidoc.git#csrf
 RUN npm install -g bower
 RUN cp /usr/share/postfix/main.cf.debian /etc/postfix/main.cf
@@ -36,6 +38,8 @@ RUN bash -c 'echo -e "Fe2O3-rox\nFe2O3-rox" | passwd'
 RUN ln -s /usr/bin/nodejs /usr/local/bin/node
 RUN bash -c 'npm cache clean'
 
+RUN chown -R jovyan:users /home/jovyan/.config
+
 USER jovyan
 WORKDIR /tmp
 
@@ -50,15 +54,20 @@ RUN pip3 install pymatgen-db==0.6.1
 RUN pip3 install flamyngo==0.4.3
 RUN conda clean -a -y
 
-RUN bash -c 'source activate python2 && pip install --upgrade pip'
-RUN bash -c 'source activate python2 && pip install -U ipykernel==4.5.1 nbformat notebook ipywidgets'
-RUN bash -c 'source activate python2 && jupyter nbextension enable --py widgetsnbextension --sys-prefix'
+RUN bash -c 'source activate python2 && pip install --upgrade pip setuptools'
+RUN bash -c 'source activate python2 && pip install --upgrade nbformat'
+RUN bash -c 'source activate python2 && pip install -e git+https://github.com/jupyter/notebook.git#egg=notebook'
+#RUN bash -c 'source activate python2 && conda install -c conda-forge ipywidgets'
+#RUN bash -c 'source activate python2 && pip install -U ipykernel==4.5.1 nbformat notebook ipywidgets'
 RUN bash -c 'source activate python2 && pip install Django==1.8.5'
 RUN bash -c 'source activate python2 && pip install pymongo palettable prettyplotlib'
 RUN bash -c 'source activate python2 && pip install pymatgen'
 RUN bash -c 'source activate python2 && pip install fireworks'
 RUN bash -c 'source activate python2 && pip install custodian'
 RUN bash -c 'source activate python2 && pip install -e git+https://github.com/hackingmaterials/MatMethods.git@v0.21#egg=matmethods'
+RUN bash -c 'source activate python2 && pip install -e git+https://github.com/jupyter-widgets/ipywidgets.git#egg=ipywidgets'
+RUN bash -c 'source activate python2 && cd /tmp/src/ipywidgets && ./dev-install.sh --sys-prefix'
+#RUN bash -c 'source activate python2 && jupyter nbextension enable --py widgetsnbextension --sys-prefix'
 
 WORKDIR /home/jovyan/work
 RUN git clone https://github.com/materialsproject/MPContribs.git
