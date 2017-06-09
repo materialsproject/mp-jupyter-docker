@@ -111,8 +111,7 @@ RUN git clone https://github.com/amix/vimrc.git /home/jovyan/.vim_runtime
 RUN sh /home/jovyan/.vim_runtime/install_basic_vimrc.sh
 
 RUN mkdir /home/jovyan/.ssh && chown jovyan /home/jovyan/.ssh && chmod 700 /home/jovyan/.ssh
-RUN ssh-keygen -f /home/jovyan/.ssh/id_rsa -t rsa -N '' -b 4096
-RUN eval `ssh-agent -s` && ssh-add /home/jovyan/.ssh/id_rsa
+RUN git config --global alias.lg 'log --decorate --oneline --graph --all'
 RUN git config --global push.default simple
 RUN touch /data/db/mongod.log
 COPY kernel.json /usr/local/share/jupyter/kernels/python2/kernel.json
