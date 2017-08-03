@@ -1,7 +1,7 @@
 # Build as materialsproject/jupyterhub-singleuser
 # Run with the DockerSpawner in JupyterHub
 
-FROM jupyterhub/singleuser
+FROM jupyterhub/singleuser@sha256:e5036f78d3d36c605cc6f16eda7c1b6e1dd12cbbdb93edc718ef214c3bca7e36
 
 MAINTAINER Shreyas Cholia <scholia@lbl.gov>
 
