@@ -36,9 +36,10 @@ RUN apt-get install -y dvipng
 RUN bash -c 'echo -e "Fe2O3-rox\nFe2O3-rox" | passwd'
 
 RUN ln -s /usr/bin/nodejs /usr/local/bin/node
-RUN bash -c 'npm cache clean'
+RUN bash -c 'npm cache clean --force'
 
 RUN chown -R jovyan:users /home/jovyan/.config
+RUN chown -R jovyan /home/jovyan/.npm
 
 USER jovyan
 WORKDIR /tmp
@@ -49,7 +50,7 @@ RUN pip3 install pymongo palettable prettyplotlib
 RUN pip3 install pymatgen
 RUN pip3 install fireworks
 RUN pip3 install custodian
-RUN pip3 install -e git+https://github.com/hackingmaterials/MatMethods.git@v0.21#egg=matmethods
+RUN pip3 install -e git+https://github.com/hackingmaterials/atomate.git#egg=atomate
 RUN pip3 install pymatgen-db==0.6.1
 RUN pip3 install flamyngo==0.4.3
 RUN conda clean -a -y
@@ -64,12 +65,14 @@ RUN bash -c 'source activate python2 && pip install pymongo palettable prettyplo
 RUN bash -c 'source activate python2 && pip install pymatgen'
 RUN bash -c 'source activate python2 && pip install fireworks'
 RUN bash -c 'source activate python2 && pip install custodian'
-RUN bash -c 'source activate python2 && pip install -e git+https://github.com/hackingmaterials/MatMethods.git@v0.21#egg=matmethods'
+RUN bash -c 'source activate python2 && pip install -e git+https://github.com/hackingmaterials/atomate.git#egg=atomate'
 RUN bash -c 'source activate python2 && pip install -e git+https://github.com/jupyter-widgets/ipywidgets.git#egg=ipywidgets'
 RUN bash -c 'source activate python2 && cd /tmp/src/ipywidgets && ./dev-install.sh --sys-prefix'
 #RUN bash -c 'source activate python2 && jupyter nbextension enable --py widgetsnbextension --sys-prefix'
 
 WORKDIR /home/jovyan/work
+RUN git clone https://github.com/materialsproject/workshop-2017
+RUN cd workshop-2017 && git remote set-url --push origin git@github.com:materialsproject/workshop-2017.git
 RUN git clone https://github.com/materialsproject/MPContribs.git
 WORKDIR /home/jovyan/work/MPContribs
 RUN git remote set-url --push origin git@github.com:materialsproject/MPContribs.git
@@ -102,10 +105,10 @@ RUN mkdir -p /opt/conda/envs/python2/etc/conda/activate.d;  mkdir -p /opt/conda/
     echo '#!/bin/sh' > /opt/conda/envs/python2/etc/conda/deactivate.d/env_vars.sh; \
     echo 'unset PYTHONPATH' >> /opt/conda/envs/python2/etc/conda/deactivate.d/env_vars.sh
 
-RUN echo 'export VASP_PSP_DIR=/POTCARs/' >> /home/jovyan/.bashrc
 RUN echo 'source activate python2' >> /home/jovyan/.bashrc
 RUN echo 'export EDITOR=vim' >> /home/jovyan/.bashrc
 RUN echo 'alias l="ls -ltrh"' >> /home/jovyan/.bashrc
+RUN pmg config --add PMG_VASP_PSP_DIR /POTCARs/
 
 RUN git clone https://github.com/amix/vimrc.git /home/jovyan/.vim_runtime
 RUN sh /home/jovyan/.vim_runtime/install_basic_vimrc.sh
