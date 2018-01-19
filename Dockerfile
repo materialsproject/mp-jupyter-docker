@@ -3,7 +3,7 @@
 
 FROM jupyterhub/singleuser@sha256:c39fcdc1913308667c5a53250d1ce7669c0c45099b3544a3f4fbe78721427adb
 
-MAINTAINER Shreyas Cholia <scholia@lbl.gov>
+MAINTAINER Patrick Huck <phuck@lbl.gov>
 
 EXPOSE 8888
 EXPOSE 5000
@@ -33,7 +33,7 @@ COPY install_openbabel.sh /tmp/install_openbabel.sh
 RUN /tmp/install_openbabel.sh
 
 RUN apt-get install -y dvipng
-RUN bash -c 'echo -e "Fe2O3-rox\nFe2O3-rox" | passwd'
+#RUN bash -c 'echo -e "Fe2O3-rox\nFe2O3-rox" | passwd'
 
 RUN ln -s /usr/bin/nodejs /usr/local/bin/node
 RUN bash -c 'npm cache clean --force'
@@ -66,9 +66,11 @@ RUN bash -c 'source activate python2 && pip install pymatgen'
 RUN bash -c 'source activate python2 && pip install fireworks'
 RUN bash -c 'source activate python2 && pip install custodian'
 RUN bash -c 'source activate python2 && pip install atomate'
-RUN bash -c 'source activate python2 && pip install -e git+https://github.com/jupyter-widgets/ipywidgets.git#egg=ipywidgets'
-RUN bash -c 'source activate python2 && cd /tmp/src/ipywidgets && ./dev-install.sh --sys-prefix'
+#RUN bash -c 'source activate python2 && pip install -e git+https://github.com/jupyter-widgets/ipywidgets.git#egg=ipywidgets'
+#RUN bash -c 'source activate python2 && cd /tmp/src/ipywidgets && ./dev-install.sh --sys-prefix'
 #RUN bash -c 'source activate python2 && jupyter nbextension enable --py widgetsnbextension --sys-prefix'
+
+RUN bash -c 'source activate python2 && pip install ase xarray igor xrdtools xrayutilities pympler'
 
 WORKDIR /home/jovyan/work
 RUN git clone https://github.com/materialsproject/workshop-2017
@@ -118,6 +120,8 @@ RUN pmg config --add PMG_VASP_PSP_DIR /POTCARs/
 
 RUN git clone https://github.com/amix/vimrc.git /home/jovyan/.vim_runtime
 RUN sh /home/jovyan/.vim_runtime/install_basic_vimrc.sh
+COPY alphsubs.txt /home/jovyan/.alphsubs.txt
+RUN cat /home/jovyan/.alphsubs.txt >> /home/jovyan/.vimrc
 
 RUN mkdir /home/jovyan/.ssh && chown jovyan /home/jovyan/.ssh && chmod 700 /home/jovyan/.ssh
 RUN git config --global alias.lg 'log --decorate --oneline --graph --all'
