@@ -45,6 +45,7 @@ USER jovyan
 WORKDIR /tmp
 
 RUN pip3 install --upgrade pip
+RUN pip3 install --upgrade nbformat
 RUN pip3 install Django==1.8.5
 RUN pip3 install pymongo palettable prettyplotlib
 RUN pip3 install pymatgen
@@ -53,13 +54,21 @@ RUN pip3 install custodian
 RUN pip3 install atomate
 RUN pip3 install pymatgen-db==0.6.1
 RUN pip3 install flamyngo==0.4.3
+RUN pip3 install ipywidgets>=6.0.0
+RUN jupyter nbextension enable widgetsnbextension --user --py
+#RUN conda install -c conda-forge ipywidgets
+#RUN pip3 install git+https://github.com/gabrielelanaro/chemview.git#egg=chemview
+#RUN jupyter nbextension enable widgetsnbextension --user --py
+#RUN jupyter nbextension install --user --py --symlink chemview
+#RUN jupyter nbextension enable --user --py chemview
+
 RUN conda clean -a -y
 
 RUN bash -c 'source activate python2 && pip install --upgrade pip setuptools'
 RUN bash -c 'source activate python2 && pip install --upgrade nbformat'
 RUN bash -c 'source activate python2 && pip install -e git+https://github.com/jupyter/notebook.git#egg=notebook'
-#RUN bash -c 'source activate python2 && conda install -c conda-forge ipywidgets'
-#RUN bash -c 'source activate python2 && pip install -U ipykernel==4.5.1 nbformat notebook ipywidgets'
+RUN bash -c 'source activate python2 && conda install -c conda-forge ipywidgets'
+RUN bash -c 'source activate python2 && pip install -U ipykernel==4.5.1 nbformat notebook ipywidgets'
 RUN bash -c 'source activate python2 && pip install Django==1.8.5'
 RUN bash -c 'source activate python2 && pip install pymongo palettable prettyplotlib'
 RUN bash -c 'source activate python2 && pip install pymatgen'
@@ -69,7 +78,6 @@ RUN bash -c 'source activate python2 && pip install atomate'
 #RUN bash -c 'source activate python2 && pip install -e git+https://github.com/jupyter-widgets/ipywidgets.git#egg=ipywidgets'
 #RUN bash -c 'source activate python2 && cd /tmp/src/ipywidgets && ./dev-install.sh --sys-prefix'
 #RUN bash -c 'source activate python2 && jupyter nbextension enable --py widgetsnbextension --sys-prefix'
-
 RUN bash -c 'source activate python2 && pip install ase xarray igor xrdtools xrayutilities pympler'
 
 WORKDIR /home/jovyan/work
@@ -99,12 +107,6 @@ RUN bash -c 'source activate python2 && conda install pyqt=4.11'
 RUN bash -c 'source activate python2 && pip install -e git+https://github.com/gabrielelanaro/chemview.git#egg=chemview'
 RUN bash -c 'source activate python2 && jupyter nbextension install --sys-prefix --py --symlink chemview && jupyter nbextension enable --sys-prefix --py chemview'
 RUN bash -c 'source activate python2 && conda clean -a -y'
-
-RUN pip3 install --upgrade nbformat
-RUN pip3 install git+https://github.com/gabrielelanaro/chemview.git#egg=chemview
-RUN jupyter nbextension enable widgetsnbextension --user --py
-RUN jupyter nbextension install --user --py --symlink chemview
-RUN jupyter nbextension enable --user --py  chemview
 
 ## Add pythonpath to conda env
 RUN mkdir -p /opt/conda/envs/python2/etc/conda/activate.d;  mkdir -p /opt/conda/envs/python2/etc/conda/deactivate.d; \
