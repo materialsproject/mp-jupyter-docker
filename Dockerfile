@@ -44,7 +44,7 @@ RUN chown -R jovyan /home/jovyan/.npm
 USER jovyan
 WORKDIR /tmp
 
-RUN pip3 install --upgrade pip
+RUN pip3 install pip==9.0.3
 RUN pip3 install --upgrade nbformat
 RUN pip3 install Django==1.8.5
 RUN pip3 install pymongo palettable prettyplotlib
@@ -64,7 +64,8 @@ RUN jupyter nbextension enable widgetsnbextension --user --py
 
 RUN conda clean -a -y
 
-RUN bash -c 'source activate python2 && pip install --upgrade pip setuptools'
+RUN bash -c 'source activate python2 && pip install pip==9.0.3'
+RUN bash -c 'source activate python2 && pip install --upgrade setuptools'
 RUN bash -c 'source activate python2 && pip install --upgrade nbformat'
 RUN bash -c 'source activate python2 && pip install -e git+https://github.com/jupyter/notebook.git#egg=notebook'
 RUN bash -c 'source activate python2 && conda install -c conda-forge ipywidgets'
