@@ -46,6 +46,7 @@ RUN wget https://chromedriver.storage.googleapis.com/2.35/chromedriver_linux64.z
       unzip chromedriver_linux64.zip && cp chromedriver /usr/bin
 RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
       dpkg -i google-chrome-stable_current_amd64.deb && apt-get -f install
+RUN apt-get install -y apache2-dev
 
 USER jovyan
 
@@ -54,10 +55,10 @@ RUN pip3 install -U Jinja2 && pip3 install -e git+https://github.com/tschaume/fi
       cd src/fireworks && git remote set-url --push origin git@github.com:tschaume/fireworks.git
 RUN pip3 install -e git+https://github.com/materialsproject/maggma.git#egg=maggma && \
       cd src/maggma && git remote set-url --push origin git@github.com:materialsproject/maggma.git
-RUN pip3 install pip==9.0.3 atomate jhub_cas_authenticator && conda clean -a -y
+RUN pip3 install pip==9.0.3 atomate && conda clean -a -y
+RUN pip3 install -e git+https://github.com/tschaume/jhub_cas_authenticator.git#egg=jhub_cas_authenticator
 RUN bash -c 'source activate python2 && pip install pip==9.0.3 && \
-      pip install --upgrade setuptools nbformat ipykernel==4.5.1 scipy && \
-      pip install -e git+https://github.com/jupyter/notebook.git#egg=notebook && \
+      pip install --upgrade setuptools ipykernel notebook scipy && \
       pip install Django==1.8.5 atomate ase xarray igor xrdtools xrayutilities pympler openpyxl selenium'
 COPY example_tasks.tar.gz /home/jovyan/example_tasks.tar.gz
 RUN wget https://materialsproject.org/static/tasks_jcap.bson.gz
@@ -69,7 +70,7 @@ RUN git clone https://github.com/materialsproject/MPContribs.git && cd MPContrib
       git remote set-url --push origin git@github.com:materialsproject/MPContribs.git
 
 WORKDIR /home/jovyan/work/MPContribs
-RUN cp db.sqlite3.init db.sqlite3 && ln -s notebooks/profile/custom /home/jovyan/.jupyter/custom
+RUN cp db.sqlite3.init db.sqlite3 && ln -s /home/jovyan/work/MPContribs/notebooks/profile/custom /home/jovyan/.jupyter/custom
 RUN git submodule init mpcontribs/users && git submodule update mpcontribs/users && cd mpcontribs/users && \
       git remote set-url --push origin git@github.com:materialsproject/MPContribsUsers.git && git checkout master
 RUN git submodule init webtzite && git submodule update webtzite && cd webtzite && \
