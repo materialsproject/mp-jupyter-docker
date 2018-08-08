@@ -51,21 +51,36 @@ RUN apt-get install -y apache2-dev
 USER jovyan
 
 WORKDIR /home/jovyan
-RUN pip3 install -U Jinja2 && pip3 install -e git+https://github.com/tschaume/fireworks.git#egg=fireworks && \
-      cd src/fireworks && git remote set-url --push origin git@github.com:tschaume/fireworks.git
-RUN pip3 install -e git+https://github.com/materialsproject/maggma.git#egg=maggma && \
-      cd src/maggma && git remote set-url --push origin git@github.com:materialsproject/maggma.git
+RUN pip3 install -U pip==9.0.3 Jinja2
+RUN pip3 install pybtex==0.21 nose==1.3.7 coverage==4.5.1 ase==3.11.0 coveralls==1.3.0 \
+      chemview==0.6 netCDF4==1.3.1 fdint==2.0.2 phonopy==1.11.12.121 networkx==2.1 h5py==2.7.1
+RUN git clone https://github.com/tschaume/fireworks.git src/fireworks && \
+      cd src/fireworks && git remote set-url --push origin git@github.com:tschaume/fireworks.git && \
+      git remote add upstream https://github.com/materialsproject/fireworks.git && \
+      git config user.email "phuck@lbl.gov" && git config user.name "Patrick Huck" && \
+      git fetch upstream && git merge upstream/master && pip3 install -e .
 RUN pip3 install pip==9.0.3 atomate && conda clean -a -y
 RUN pip3 install -e git+https://github.com/tschaume/jhub_cas_authenticator.git#egg=jhub_cas_authenticator
 RUN bash -c 'source activate python2 && pip install pip==9.0.3 && \
       pip install --upgrade setuptools ipykernel notebook scipy && \
       pip install Django==1.8.5 atomate ase xarray igor xrdtools xrayutilities pympler openpyxl selenium'
+
 COPY example_tasks.tar.gz /home/jovyan/example_tasks.tar.gz
-RUN wget https://materialsproject.org/static/tasks_jcap.bson.gz
+RUN wget -nv https://materialsproject.org/static/tasks_jcap.bson.gz && \
+      wget -nv https://materialsproject.org/static/mp_structures.bson.gz && \
+      wget -nv https://materialsproject.org/static/amcsd_structures.bson.gz
+
+USER root
+COPY one_time_setup.sh /home/jovyan/one_time_setup.sh
+RUN chown jovyan:users /home/jovyan/one_time_setup.sh
+RUN chmod +x /home/jovyan/one_time_setup.sh
+RUN chown jovyan:users /home/jovyan/example_tasks.tar.gz
+USER jovyan
 
 WORKDIR /home/jovyan/work
 RUN git clone https://github.com/materialsproject/workshop-2018 && cd workshop-2018 && \
-      git remote set-url --push origin git@github.com:materialsproject/workshop-2018.git
+      git remote set-url --push origin git@github.com:materialsproject/workshop-2018.git && \
+      pip3 install -e .
 RUN git clone https://github.com/materialsproject/MPContribs.git && cd MPContribs && \
       git remote set-url --push origin git@github.com:materialsproject/MPContribs.git
 
@@ -74,9 +89,10 @@ RUN cp db.sqlite3.init db.sqlite3 && ln -s /home/jovyan/work/MPContribs/notebook
 RUN git submodule init mpcontribs/users && git submodule update mpcontribs/users && cd mpcontribs/users && \
       git remote set-url --push origin git@github.com:materialsproject/MPContribsUsers.git && git checkout master
 RUN git submodule init webtzite && git submodule update webtzite && cd webtzite && \
-      git remote set-url --push origin git@github.com:materialsproject/webtzite.git && git checkout master && bower install
+      git remote set-url --push origin git@github.com:materialsproject/webtzite.git && git checkout master && bower install && \
+      cd static && ln -s /opt/conda/envs/python2/lib/python2.7/site-packages/django/contrib/admin/static/admin
 RUN git submodule init docker/jupyterhub && git submodule update docker/jupyterhub && cd docker/jupyterhub && pip3 install -e .
-RUN bash -c 'source activate python2 && pip install -e . && export MPCONTRIBS_DEBUG="True" && python manage.py migrate'
+RUN bash -c 'source activate python2 && pip install -e . && MPCONTRIBS_DEBUG="True" python manage.py migrate'
 
 ## Add pythonpath to conda env
 RUN mkdir -p /opt/conda/envs/python2/etc/conda/activate.d;  mkdir -p /opt/conda/envs/python2/etc/conda/deactivate.d; \
@@ -85,7 +101,8 @@ RUN mkdir -p /opt/conda/envs/python2/etc/conda/activate.d;  mkdir -p /opt/conda/
     echo '#!/bin/sh' > /opt/conda/envs/python2/etc/conda/deactivate.d/env_vars.sh; \
     echo 'unset PYTHONPATH' >> /opt/conda/envs/python2/etc/conda/deactivate.d/env_vars.sh
 
-RUN echo 'source activate python2' >> /home/jovyan/.bashrc; echo 'export EDITOR=vim' >> /home/jovyan/.bashrc; \
+    RUN echo 'export EDITOR=vim' >> /home/jovyan/.bashrc; \
+      echo 'export FW_CONFIG_FILE=/home/jovyan/work/workshop-2018/mp_workshop/fireworks_config/FW_config.yaml' >> /home/jovyan/.bashrc; \
       echo 'alias l="ls -ltrh"' >> /home/jovyan/.bashrc; pmg config --add PMG_VASP_PSP_DIR /POTCARs/
 RUN git clone https://github.com/amix/vimrc.git /home/jovyan/.vim_runtime && sh /home/jovyan/.vim_runtime/install_basic_vimrc.sh
 COPY alphsubs.txt /home/jovyan/.alphsubs.txt
