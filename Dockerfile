@@ -78,6 +78,7 @@ RUN chown jovyan:users /home/jovyan/example_tasks.tar.gz
 USER jovyan
 
 WORKDIR /home/jovyan/work
+RUN conda install -y pygraphviz
 RUN git clone https://github.com/materialsproject/workshop-2018 && cd workshop-2018 && \
       git remote set-url --push origin git@github.com:materialsproject/workshop-2018.git && \
       pip3 install -e .
@@ -105,6 +106,7 @@ RUN mkdir -p /opt/conda/envs/python2/etc/conda/activate.d;  mkdir -p /opt/conda/
       echo 'export FW_CONFIG_FILE=/home/jovyan/work/workshop-2018/mp_workshop/fireworks_config/FW_config.yaml' >> /home/jovyan/.bashrc; \
       echo 'alias l="ls -ltrh"' >> /home/jovyan/.bashrc; pmg config --add PMG_VASP_PSP_DIR /POTCARs/
 RUN git clone https://github.com/amix/vimrc.git /home/jovyan/.vim_runtime && sh /home/jovyan/.vim_runtime/install_basic_vimrc.sh
+# TODO install awesome vimrc and use ir_black colorscheme
 COPY alphsubs.txt /home/jovyan/.alphsubs.txt
 RUN cat /home/jovyan/.alphsubs.txt >> /home/jovyan/.vimrc && \
       mkdir /home/jovyan/.ssh && chown jovyan /home/jovyan/.ssh && chmod 700 /home/jovyan/.ssh
@@ -118,4 +120,10 @@ user root
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY start_slurm.sh /root/start_slurm.sh
 RUN chmod +x /root/start_slurm.sh
+#RUN cd /root && wget -nv https://selenium-release.storage.googleapis.com/3.13/selenium-server-standalone-3.13.0.jar
+COPY selenium-server-standalone-3.13.0.jar /root/selenium-server-standalone-3.13.0.jar
+RUN apt-get install -y -t sid default-jdk
+USER jovyan
+RUN pip3 install -U atomate; exit 0
+USER root
 CMD ["/usr/bin/supervisord"]
